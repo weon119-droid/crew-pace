@@ -4,3 +4,5 @@ supabase/.temp
 .env
 .env.local
 *.log
+
+.vercel
