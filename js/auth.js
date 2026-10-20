@@ -1,82 +1,60 @@
 import { supabase } from './supabaseClient.js';
 
 /**
- * Initiates Google OAuth login flow.
- * In production or local dev, redirectTo will redirect back to current origin + /board.html
+ * Google OAuth 2.0 Sign-In
  */
 export async function signInWithGoogle() {
-  const redirectOrigin = window.location.origin;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${redirectOrigin}/board.html`
+      redirectTo: `${window.location.origin}/index.html`
     }
   });
-
-  if (error) {
-    console.error('Google Sign-in Error:', error);
-    throw error;
-  }
+  if (error) throw error;
   return data;
 }
 
 /**
- * Sign in or sign up with email & password (Instant Access)
+ * Instant Email Sign In / Sign Up
  */
-export async function signInOrSignUpWithEmail(email, password, fullName = '') {
-  // Try sign in first
-  let { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
+export async function signInOrSignUpWithEmail(email, password, name = '') {
+  let { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    // If invalid login, try signup
-    const signUpResult = await supabase.auth.signUp({
+    const signup = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          full_name: fullName || email.split('@')[0],
-          name: fullName || email.split('@')[0]
+          full_name: name || email.split('@')[0],
+          name: name || email.split('@')[0]
         }
       }
     });
-
-    if (signUpResult.error) {
-      throw signUpResult.error;
-    }
-    return signUpResult.data;
+    if (signup.error) throw signup.error;
+    return signup.data;
   }
-
   return data;
 }
 
 /**
- * Sign out current user
+ * Sign Out
  */
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error('Sign-out Error:', error);
-  }
-  window.location.href = '/index.html';
+  await supabase.auth.signOut();
+  window.location.href = 'index.html';
 }
 
 /**
- * Get current session
+ * Get current active session
  */
 export async function getSession() {
   const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) {
-    console.error('Session retrieval error:', error);
-    return null;
-  }
+  if (error) return null;
   return session;
 }
 
 /**
- * Get current authenticated user profile from public.profiles
+ * Fetch current user profile with role ('pending' | 'member' | 'admin')
  */
 export async function getCurrentProfile() {
   const session = await getSession();
@@ -88,15 +66,13 @@ export async function getCurrentProfile() {
     .eq('id', session.user.id)
     .single();
 
-  if (error) {
-    console.warn('Profile fetch warning (new profile might be provisioning):', error);
+  if (error || !data) {
     return {
       id: session.user.id,
       email: session.user.email,
-      full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
+      name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
       avatar_url: session.user.user_metadata?.avatar_url || '',
-      role: 'GUEST',
-      status: 'PENDING'
+      role: 'pending'
     };
   }
 

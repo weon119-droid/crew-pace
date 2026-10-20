@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>새 글 / 라이딩 개설 - VELOPACE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="brand">
+        <span>VELO<span class="accent">PACE</span></span>
+        <span class="brand-badge">CREW</span>
+      </a>
+      <div id="site-nav" class="nav-links"></div>
+    </div>
+  </header>
+
+  <main style="flex:1; padding: 2rem 0 4rem;">
+    <div class="container" style="max-width: 720px;">
+      <div style="margin-bottom: 1.25rem;">
+        <a href="index.html" class="btn btn-secondary btn-sm">← 피드로 돌아가기</a>
+      </div>
+
+      <div class="form-card">
+        <h2 style="font-size:1.4rem; font-weight:800; margin-bottom:1.5rem; color:var(--text-main); display:flex; align-items:center; gap:0.5rem;">
+          🚴 새 게시글 / 라이딩 번개 개설
+        </h2>
+
+        <form id="post-form">
+          <div class="form-grid" style="margin-bottom: 1.25rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">카테고리</label>
+              <select id="category" class="form-select">
+                <option value="riding" selected>🚴 정기 / 번개 라이딩</option>
+                <option value="general">💬 자유 게시판</option>
+                <option value="notice">📢 공지사항 (운영진)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0; grid-column: span 2;">
+              <label class="form-label">제목</label>
+              <input type="text" id="title" class="form-input" placeholder="예: [토요모닝] 남북 콤보 라이딩 (평속 28-30)" required />
+            </div>
+          </div>
+
+          <!-- Dynamic Riding Fields -->
+          <div id="riding-fields" style="background:var(--bg-main); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:1.25rem; margin-bottom:1.25rem;">
+            <h4 style="font-size:0.85rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; margin-bottom:1rem;">
+              ⚡ 라이딩 상세 옵션
+            </h4>
+
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">출발 일시 *</label>
+                <input type="datetime-local" id="riding-date" class="form-input" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">집결 장소 *</label>
+                <input type="text" id="location" class="form-input" placeholder="예: 반포 미니스톱(반미) 앞" />
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">목표 평속</label>
+                <input type="text" id="target-pace" class="form-input font-mono" placeholder="예: 28-30 km/h" value="28-30 km/h" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">코스 거리 (km)</label>
+                <input type="number" id="distance-km" class="form-input font-mono" step="0.1" placeholder="예: 45.0" value="40" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">모집 정원 (명)</label>
+                <input type="number" id="max-participants" class="form-input font-mono" value="10" min="2" max="50" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">상세 내용</label>
+            <textarea id="content" class="form-textarea" style="min-height:160px;" placeholder="상세 코스(GPX), 보급 지점, 필수 준비물(헬멧, 전후미등) 등을 작성해 주세요." required></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+            <a href="index.html" class="btn btn-secondary">취소</a>
+            <button type="submit" id="btn-submit-post" class="btn btn-primary">
+              게시글 등록하기
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+    import { getCurrentProfile } from './js/auth.js';
+    import { renderNav, showToast } from './js/app.js';
+
+    let user = null;
+
+    async function init() {
+      user = await getCurrentProfile();
+      if (!user) {
+        alert('로그인이 필요한 서비스입니다.');
+        location.href = 'index.html';
+        return;
+      }
+      if (user.role === 'pending') {
+        alert('크루 운영진의 승인 후 게시글을 작성할 수 있습니다.');
+        location.href = 'index.html';
+        return;
+      }
+
+      await renderNav();
+
+      const catSelect = document.getElementById('category');
+      const ridingFields = document.getElementById('riding-fields');
+
+      // Non-admin cannot create notice
+      if (user.role !== 'admin') {
+        const noticeOpt = catSelect.querySelector('option[value="notice"]');
+        if (noticeOpt) noticeOpt.remove();
+      }
+
+      catSelect.addEventListener('change', () => {
+        if (catSelect.value === 'riding') {
+          ridingFields.style.display = 'block';
+        } else {
+          ridingFields.style.display = 'none';
+        }
+      });
+
+      const form = document.getElementById('post-form');
+      form.addEventListener('submit', handleSubmit);
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-post');
+      const category = document.getElementById('category').value;
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+
+      const payload = {
+        author_id: user.id,
+        category,
+        title,
+        content
+      };
+
+      if (category === 'riding') {
+        const ridingDate = document.getElementById('riding-date').value;
+        const location = document.getElementById('location').value.trim();
+        const targetPace = document.getElementById('target-pace').value.trim();
+        const distanceKm = document.getElementById('distance-km').value;
+        const maxParticipants = document.getElementById('max-participants').value;
+
+        if (!ridingDate || !location) {
+          alert('라이딩 일시와 집결 장소는 필수 입력 사항입니다.');
+          return;
+        }
+
+        payload.riding_date = new Date(ridingDate).toISOString();
+        payload.location = location;
+        payload.target_pace = targetPace || '28-30 km/h';
+        payload.distance_km = distanceKm ? parseFloat(distanceKm) : null;
+        payload.max_participants = maxParticipants ? parseInt(maxParticipants, 10) : 10;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = '등록 중...';
+
+        const { data, error } = await supabase
+          .from('posts')
+          .insert(payload)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Auto join creator if riding
+        if (category === 'riding' && data?.id) {
+          await supabase.from('participations').insert({
+            post_id: data.id,
+            user_id: user.id
+          });
+        }
+
+        showToast('게시글이 성공적으로 등록되었습니다!', 'success');
+        setTimeout(() => location.href = 'index.html', 500);
+      } catch (err) {
+        showToast('등록 실패: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = '게시글 등록하기';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

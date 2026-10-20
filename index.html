@@ -3,57 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crew Pace - 폐쇄형 러닝 크루 커뮤니티</title>
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/components.css">
+  <title>CYCLING CREW - 자전거 라이딩 동호회</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .hero-wrapper {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
       justify-content: center;
-      align-items: center;
-      padding: 2rem 1.25rem;
-      position: relative;
-      background: radial-gradient(circle at 50% 20%, rgba(212, 255, 0, 0.08) 0%, transparent 60%), var(--bg-canvas);
+      z-index: 1000;
+      padding: 1.25rem;
     }
-    .hero-card {
-      width: 100%;
-      max-width: 460px;
+    .modal-card {
       background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--border-medium);
       border-radius: var(--radius-md);
-      padding: 2.5rem 2rem;
-      box-shadow: var(--shadow-md);
-      text-align: center;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: var(--accent-lime-muted);
-      border: 1px solid var(--accent-lime-border);
-      color: var(--accent-lime);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.25rem 0.65rem;
-      border-radius: var(--radius-full);
-      margin-bottom: 1.25rem;
-      letter-spacing: 0.05em;
-    }
-    .hero-title {
-      font-size: 2.25rem;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 1.15;
-      margin-bottom: 0.75rem;
-    }
-    .hero-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      margin-bottom: 2rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
     .google-btn {
       width: 100%;
@@ -61,44 +33,65 @@
       color: #1f2937;
       font-weight: 700;
       font-size: 0.95rem;
-      padding: 0.85rem 1rem;
+      padding: 0.8rem 1rem;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      transition: background-color 0.15s, transform 0.1s;
+      transition: background-color 0.15s;
       border: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      margin-bottom: 1.25rem;
     }
-    .google-btn:hover {
-      background: #f1f5f9;
-    }
-    .google-btn:active {
-      transform: scale(0.99);
-    }
-    .rules-list {
-      margin-top: 1.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border-subtle);
-      text-align: left;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
+    .google-btn:hover { background: #f1f5f9; }
   </style>
 </head>
 <body>
-  <div class="hero-wrapper">
-    <div class="hero-card">
-      <div class="hero-badge font-mono">
-        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent-lime);"></span>
-        CLOSED RUNNING COMMUNITY
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="brand">
+        <span>VELO<span class="accent">PACE</span></span>
+        <span class="brand-badge">CREW</span>
+      </a>
+      <div id="site-nav" class="nav-links"></div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main style="flex:1; padding: 1.75rem 0 3.5rem;">
+    <div class="container">
+      <!-- Pending Approval Banner (Shown if user is pending) -->
+      <div id="pending-banner"></div>
+
+      <!-- Feed Controls & Category Filter Tabs -->
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom: 1.5rem;">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-category="all">전체 피드</button>
+          <button class="filter-tab" data-category="notice">📢 공지사항</button>
+          <button class="filter-tab" data-category="riding">🚴 정기/번개 라이딩</button>
+          <button class="filter-tab" data-category="general">💬 자유 게시판</button>
+        </div>
+
+        <a href="new-post.html" class="btn btn-primary btn-sm">
+          + 새 글 / 번개 개설
+        </a>
       </div>
-      <h1 class="hero-title">CREW PACE</h1>
-      <p class="hero-subtitle">
-        정기 러닝 세션, 번개 모임 모집 및 기록 아카이빙을 위한 프라이빗 러닝 크루 커뮤니티입니다.
-      </p>
+
+      <!-- Posts Feed List -->
+      <section id="posts-feed" style="display:flex; flex-direction:column; gap:1rem;">
+        <!-- Rendered by js/app.js -->
+      </section>
+    </div>
+  </main>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.25rem;">
+        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-main);">크루 로그인</h3>
+        <button id="btn-close-modal" style="color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
 
       <button id="btn-google-login" class="google-btn">
         <svg width="20" height="20" viewBox="0 0 24 24">
@@ -107,107 +100,65 @@
           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
         </svg>
-        Google 계정으로 시작하기
+        Google 계정으로 로그인
       </button>
 
-      <!-- Instant Email Access (No confirmation wait needed) -->
-      <div style="display:flex; align-items:center; gap:0.75rem; margin: 1.5rem 0 1rem; color:var(--text-muted); font-size:0.78rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; color:var(--text-dim); font-size:0.75rem; margin-bottom:1rem;">
         <span style="flex:1; height:1px; background:var(--border-subtle);"></span>
-        <span>또는 간편 이메일로 시작</span>
+        <span>또는 이메일 간편 로그인</span>
         <span style="flex:1; height:1px; background:var(--border-subtle);"></span>
       </div>
 
-      <form id="email-auth-form" style="display:flex; flex-direction:column; gap:0.65rem; text-align:left;">
-        <div>
-          <input type="email" id="email-input" class="form-input" placeholder="이메일 주소 (예: runner@pace.club)" required style="width:100%; font-size:0.88rem;" />
-        </div>
-        <div style="display:flex; gap:0.5rem;">
-          <input type="password" id="password-input" class="form-input" placeholder="비밀번호 (6자리 이상)" minlength="6" required style="flex:1; font-size:0.88rem;" />
-          <input type="text" id="name-input" class="form-input" placeholder="러너 닉네임" style="flex:1; font-size:0.88rem;" />
-        </div>
-        <button type="submit" id="btn-email-submit" class="btn btn-secondary" style="width:100%; padding:0.7rem; font-size:0.88rem;">
-          ⚡ 간편 로그인 / 즉시 가입
+      <form id="email-login-form" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <input type="email" id="modal-email" class="form-input" placeholder="이메일 주소" required />
+        <input type="password" id="modal-password" class="form-input" placeholder="비밀번호" required />
+        <input type="text" id="modal-name" class="form-input" placeholder="닉네임 (신규 가입 시)" />
+        <button type="submit" id="btn-modal-submit" class="btn btn-primary" style="width:100%;">
+          로그인 / 가입하기
         </button>
       </form>
-
-      <!-- Provider Warning Alert (Shown if Google OAuth is not enabled in Supabase yet) -->
-      <div id="oauth-warning" style="display:none; margin-top: 1.25rem; text-align: left; background: #261614; border: 1px solid #7f1d1d; border-radius: var(--radius-sm); padding: 0.85rem 1rem; font-size: 0.8rem; color: #fca5a5; line-height: 1.5;">
-        <strong>⚠️ Supabase Google Provider 안내</strong>
-        <p style="margin-top:0.35rem; color:#fecaca;">
-          구글 클라우드 콘솔의 OAuth 클라이언트 키가 필요합니다. 상단의 <strong>간편 이메일로 시작</strong>을 이용하시면 대기 없이 즉시 가입 및 모든 크루 기능을 테스트하실 수 있습니다!
-        </p>
-      </div>
-
-      <div class="rules-list">
-        <strong style="color: var(--text-secondary); display:block; margin-bottom: 0.35rem;">🔒 가입 및 이용 정책 안내</strong>
-        <p>• 폐쇄형 크루 운영을 위해 최초 가입 시 <strong>승인 대기(GUEST)</strong> 상태로 등록됩니다.</p>
-        <p>• 크루 운영진의 승인 후 <strong>MEMBER 권한</strong>이 부여되어 모임 개설, 참가 신청 및 댓글 작성이 가능합니다.</p>
-      </div>
     </div>
   </div>
 
   <div id="toast-container"></div>
 
   <script type="module">
-    import { getSession, signInWithGoogle, signInOrSignUpWithEmail } from './js/auth.js';
-    import { showToast } from './js/guard.js';
+    import { initFeed, showToast } from './js/app.js';
+    import { signInWithGoogle, signInOrSignUpWithEmail } from './js/auth.js';
 
-    // If already logged in, redirect straight to board
-    getSession().then(session => {
-      if (session) {
-        window.location.href = 'board.html';
-      }
-    });
+    document.addEventListener('DOMContentLoaded', initFeed);
 
-    const loginBtn = document.getElementById('btn-google-login');
-    const warningBox = document.getElementById('oauth-warning');
+    const modal = document.getElementById('login-modal');
+    const btnClose = document.getElementById('btn-close-modal');
+    if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
 
-    loginBtn.addEventListener('click', async () => {
-      try {
-        loginBtn.disabled = true;
-        loginBtn.innerText = 'Google 로그인 중...';
-        await signInWithGoogle();
-      } catch (err) {
-        console.error('Login Error:', err);
-        showToast('로그인 안내: ' + err.message, 'error');
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          Google 계정으로 시작하기
-        `;
-        if (warningBox) warningBox.style.display = 'block';
-      }
-    });
+    // Google Login
+    const googleBtn = document.getElementById('btn-google-login');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', async () => {
+        try {
+          await signInWithGoogle();
+        } catch (err) {
+          showToast('Google 로그인 오류: ' + err.message, 'error');
+        }
+      });
+    }
 
-    // Email Instant Auth Handler
-    const emailForm = document.getElementById('email-auth-form');
-    const emailSubmitBtn = document.getElementById('btn-email-submit');
-
+    // Email Login
+    const emailForm = document.getElementById('email-login-form');
     if (emailForm) {
       emailForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email-input').value.trim();
-        const password = document.getElementById('password-input').value;
-        const name = document.getElementById('name-input').value.trim();
-
+        const email = document.getElementById('modal-email').value.trim();
+        const pass = document.getElementById('modal-password').value;
+        const name = document.getElementById('modal-name').value.trim();
         try {
-          emailSubmitBtn.disabled = true;
-          emailSubmitBtn.textContent = '인증 진행 중...';
-          await signInOrSignUpWithEmail(email, password, name);
-          showToast('성공! 크루 보드로 이동합니다 🏃', 'success');
-          setTimeout(() => {
-            window.location.href = 'board.html';
-          }, 400);
+          await signInOrSignUpWithEmail(email, pass, name);
+          showToast('로그인 성공!', 'success');
+          modal.style.display = 'none';
+          location.reload();
         } catch (err) {
-          console.error('Email Auth Error:', err);
-          showToast(err.message || '인증에 실패했습니다.', 'error');
-          emailSubmitBtn.disabled = false;
-          emailSubmitBtn.textContent = '⚡ 간편 로그인 / 즉시 가입';
+          showToast(err.message, 'error');
         }
       });
     }

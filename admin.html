@@ -3,18 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crew Pace - 운영진 관리 콘솔</title>
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/components.css">
+  <title>운영진 대시보드 - VELOPACE</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .stat-cards {
+    .admin-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
     }
-    .stat-card {
+    .stat-box {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
@@ -24,70 +22,98 @@
       gap: 0.35rem;
     }
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--text-muted);
+      color: var(--text-dim);
       text-transform: uppercase;
     }
-    .stat-value {
-      font-size: 1.75rem;
+    .stat-num {
+      font-size: 1.8rem;
       font-weight: 900;
-      color: var(--text-primary);
+      color: var(--text-main);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .admin-table th {
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-medium);
+    }
+    .admin-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
     }
   </style>
 </head>
 <body>
-  <!-- Global Header -->
-  <header class="site-header"></header>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="brand">
+        <span>VELO<span class="accent">PACE</span></span>
+        <span class="brand-badge">CREW</span>
+      </a>
+      <div id="site-nav" class="nav-links"></div>
+    </div>
+  </header>
 
-  <main class="main-content">
+  <main style="flex:1; padding: 2rem 0 4rem;">
     <div class="container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
         <div>
-          <h1 style="font-size: 1.5rem; font-weight: 800; display:flex; align-items:center; gap:0.5rem;">
-            ⚙️ 크루원 승인 및 관리자 콘솔
-          </h1>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
-            신규 가입자 승인, 크루 배번 발급, 회원 권한을 제어합니다.
+          <h2 style="font-size:1.5rem; font-weight:900; color:var(--text-main); display:flex; align-items:center; gap:0.5rem;">
+            ⚙️ 크루 회원 승인 및 관리자 콘솔
+          </h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">
+            신규 가입 신청자를 승인하고 크루원 권한을 관리합니다.
           </p>
         </div>
+        <a href="index.html" class="btn btn-secondary btn-sm">피드로 돌아가기</a>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="stat-cards">
-        <div class="stat-card">
-          <span class="stat-label">전체 계정</span>
-          <span id="stat-total" class="stat-value font-mono">-</span>
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="stat-box">
+          <span class="stat-label">전체 등록 회원</span>
+          <span id="stat-total" class="stat-num font-mono">-</span>
         </div>
-        <div class="stat-card" style="border-left: 3px solid #eab308;">
-          <span class="stat-label" style="color: #fde047;">승인 대기자 (PENDING)</span>
-          <span id="stat-pending" class="stat-value font-mono" style="color: #fde047;">-</span>
+        <div class="stat-box" style="border-left:3px solid #eab308;">
+          <span class="stat-label" style="color:#fde047;">가입 대기자 (PENDING)</span>
+          <span id="stat-pending" class="stat-num font-mono" style="color:#fde047;">-</span>
         </div>
-        <div class="stat-card" style="border-left: 3px solid var(--accent-lime);">
-          <span class="stat-label" style="color: var(--accent-lime);">정규 크루원 (MEMBER)</span>
-          <span id="stat-member" class="stat-value font-mono" style="color: var(--accent-lime);">-</span>
+        <div class="stat-box" style="border-left:3px solid var(--accent-volt);">
+          <span class="stat-label" style="color:var(--accent-volt);">정규 라이더 (MEMBER)</span>
+          <span id="stat-member" class="stat-num font-mono" style="color:var(--accent-volt);">-</span>
         </div>
-        <div class="stat-card" style="border-left: 3px solid #fb923c;">
-          <span class="stat-label" style="color: #fb923c);">운영진 (ADMIN)</span>
-          <span id="stat-admin" class="stat-value font-mono" style="color: #fb923c;">-</span>
+        <div class="stat-box" style="border-left:3px solid var(--accent-orange);">
+          <span class="stat-label" style="color:var(--accent-orange);">운영진 (ADMIN)</span>
+          <span id="stat-admin" class="stat-num font-mono" style="color:var(--accent-orange);">-</span>
         </div>
       </div>
 
-      <!-- Users Table -->
-      <div class="table-wrapper">
-        <table class="data-table">
+      <!-- Table -->
+      <div style="overflow-x:auto; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-sm);">
+        <table class="admin-table">
           <thead>
             <tr>
-              <th>크루원 / 이메일</th>
-              <th>배번 (BIB)</th>
-              <th>역할 (Role)</th>
-              <th>가입 상태 (Status)</th>
-              <th>가입일</th>
-              <th>권한 및 승인 액션</th>
+              <th>라이더 정보</th>
+              <th>이메일</th>
+              <th>현재 권한</th>
+              <th>가입 일시</th>
+              <th>권한 변경 액션</th>
             </tr>
           </thead>
-          <tbody id="user-table-body">
-            <!-- Rendered by js/admin.js -->
+          <tbody id="user-rows">
+            <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">회원 명단 불러오는 중...</td></tr>
           </tbody>
         </table>
       </div>
@@ -96,6 +122,132 @@
 
   <div id="toast-container"></div>
 
-  <script type="module" src="js/admin.js"></script>
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+    import { getCurrentProfile } from './js/auth.js';
+    import { renderNav, showToast } from './js/app.js';
+
+    let currentAdmin = null;
+
+    async function init() {
+      currentAdmin = await getCurrentProfile();
+      if (!currentAdmin || currentAdmin.role !== 'admin') {
+        alert('운영진(ADMIN) 권한이 필요한 페이지입니다.');
+        location.href = 'index.html';
+        return;
+      }
+      await renderNav();
+      await loadUsers();
+    }
+
+    async function loadUsers() {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        showToast('회원 목록 불러오기 실패: ' + error.message, 'error');
+        return;
+      }
+
+      const users = (data || []).sort((a, b) => {
+        if (a.role === 'pending' && b.role !== 'pending') return -1;
+        if (a.role !== 'pending' && b.role === 'pending') return 1;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      // Update stats
+      document.getElementById('stat-total').textContent = users.length;
+      document.getElementById('stat-pending').textContent = users.filter(u => u.role === 'pending').length;
+      document.getElementById('stat-member').textContent = users.filter(u => u.role === 'member').length;
+      document.getElementById('stat-admin').textContent = users.filter(u => u.role === 'admin').length;
+
+      const tbody = document.getElementById('user-rows');
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">등록된 회원이 없습니다.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(user => {
+        const isSelf = user.id === currentAdmin.id;
+        const isPending = user.role === 'pending';
+
+        return `
+          <tr style="${isPending ? 'background:rgba(234,179,8,0.06);' : ''}">
+            <td>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="width:28px; height:28px; border-radius:50%; background:var(--border-medium); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  ${user.avatar_url ? `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : (user.name || 'U').charAt(0)}
+                </div>
+                <span style="font-weight:700;">${escapeHtml(user.name || '라이더')} ${isSelf ? '<span style="font-size:0.75rem; color:var(--accent-orange);">(나)</span>' : ''}</span>
+              </div>
+            </td>
+            <td class="font-mono" style="color:var(--text-muted); font-size:0.82rem;">${escapeHtml(user.email)}</td>
+            <td>
+              <span class="badge ${user.role === 'admin' ? 'badge-status-admin' : user.role === 'member' ? 'badge-status-member' : 'badge-status-pending'}">
+                ${user.role.toUpperCase()}
+              </span>
+            </td>
+            <td class="font-mono" style="color:var(--text-dim); font-size:0.78rem;">${new Date(user.created_at).toLocaleDateString()}</td>
+            <td>
+              ${isSelf ? '<span style="font-size:0.78rem; color:var(--text-dim);">본인 계정</span>' : `
+                <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                  ${isPending ? `
+                    <button class="btn btn-primary btn-sm btn-role" data-id="${user.id}" data-role="member">
+                      ✓ 가입 승인 (member)
+                    </button>
+                  ` : ''}
+                  ${user.role !== 'admin' ? `
+                    <button class="btn btn-secondary btn-sm btn-role" data-id="${user.id}" data-role="admin">
+                      운영진 지정 (admin)
+                    </button>
+                  ` : `
+                    <button class="btn btn-secondary btn-sm btn-role" data-id="${user.id}" data-role="member">
+                      일반 멤버로 강등
+                    </button>
+                  `}
+                  ${user.role !== 'pending' ? `
+                    <button class="btn btn-danger btn-sm btn-role" data-id="${user.id}" data-role="pending">
+                      대기로 변경 (제한)
+                    </button>
+                  ` : ''}
+                </div>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.btn-role').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const uid = btn.dataset.id;
+          const newRole = btn.dataset.role;
+          await updateRole(uid, newRole);
+        });
+      });
+    }
+
+    async function updateRole(uid, newRole) {
+      try {
+        const { error } = await supabase.rpc('admin_set_user_role', {
+          target_user_id: uid,
+          new_role: newRole
+        });
+        if (error) throw error;
+        showToast(`회원 권한이 '${newRole.toUpperCase()}'(으)로 변경되었습니다.`, 'success');
+        await loadUsers();
+      } catch (err) {
+        showToast('권한 변경 실패: ' + err.message, 'error');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
