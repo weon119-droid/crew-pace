@@ -21,6 +21,38 @@ export async function signInWithGoogle() {
 }
 
 /**
+ * Sign in or sign up with email & password (Instant Access)
+ */
+export async function signInOrSignUpWithEmail(email, password, fullName = '') {
+  // Try sign in first
+  let { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    // If invalid login, try signup
+    const signUpResult = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName || email.split('@')[0],
+          name: fullName || email.split('@')[0]
+        }
+      }
+    });
+
+    if (signUpResult.error) {
+      throw signUpResult.error;
+    }
+    return signUpResult.data;
+  }
+
+  return data;
+}
+
+/**
  * Sign out current user
  */
 export async function signOut() {
