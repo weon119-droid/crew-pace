@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crew Pace - 러닝 피드 & 세션</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <!-- Global Header injected by guard.js -->
+  <header class="site-header"></header>
+
+  <main class="main-content">
+    <div class="container">
+      <!-- Feed Header & Tabs -->
+      <div class="feed-header">
+        <div class="tabs">
+          <button class="tab-btn active" data-category="ALL">전체 보기</button>
+          <button class="tab-btn" data-category="RUN_SESSION">🏃 정기 / 번개 러닝</button>
+          <button class="tab-btn" data-category="NOTICE">📢 공지사항</button>
+          <button class="tab-btn" data-category="FREE_TALK">💬 크루 톡</button>
+        </div>
+
+        <a href="write.html" class="btn btn-primary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          새 모임 / 글 작성
+        </a>
+      </div>
+
+      <!-- High Density Post List -->
+      <section id="post-list" class="post-list">
+        <!-- Rendered by js/board.js -->
+      </section>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/board.js"></script>
+</body>
+</html>

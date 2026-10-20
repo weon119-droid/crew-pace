@@ -1,0 +1,6 @@
+.vercel
+.temp
+supabase/.temp
+.env
+.env.local
+*.log
